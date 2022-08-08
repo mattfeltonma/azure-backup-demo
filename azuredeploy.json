@@ -11,7 +11,25 @@
                 "centralus",
                 "eastus",
                 "eastus2",
+                "northcentralus",
                 "southcentralus",
+                "westcentralus",
+                "westus",
+                "westus2"
+            ]
+        },
+        "secLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "The secondary region region to deploy resources to. This should be the paired region of the primary region to support the cross region restore functionality"
+            },
+            "allowedValues": [
+                "centralus",
+                "eastus",
+                "eastus2",
+                "northcentralus",
+                "southcentralus",
+                "westcentralus",
                 "westus",
                 "westus2"
             ]
@@ -97,7 +115,7 @@
                             "name": "[variables('rgNameSecWl')]",
                             "type": "Microsoft.Resources/resourceGroups",
                             "apiVersion": "[variables('resourcesApiVersion')]",
-                            "location": "[parameters('location')]",
+                            "location": "[parameters('secLocation')]",
                             "tags": "[parameters('tags')]",
                             "properties": {
                             }
@@ -201,6 +219,9 @@
                 "parameters": {
                     "lawResourceId": {
                         "value": "[reference(variables('deployLaw')).outputs.logAnalyticsResourceId.value]"
+                    },
+                    "secLocation": {
+                        "value": "[parameters('secLocation')]"
                     },
                     "secResourceGroupName": {
                         "value": "[variables('rgNameSecWl')]"
