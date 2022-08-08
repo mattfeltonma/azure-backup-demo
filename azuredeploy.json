@@ -57,7 +57,8 @@
         "rgNamePriVlt": "[concat('rgbckvltpri', parameters('uniqueData'))]",
         "rgNamePriWl": "[concat('rgbckwlpri', parameters('uniqueData'))]",
         "rgNameSecWl": "[concat('rgbckwlsec', parameters('uniqueData'))]",
-        "templateUriRsVltRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-vault.json'))]",
+        "templateUriRsVlt": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-vault.json'))]",
+        "templateUriRsVltBackupPolicies": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-backup-policies.json'))]",
         "templateUriPriWlRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-pri-wl.json'))]",
         "templateUriSecWlRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-sec-wl.json'))]"
     },
@@ -125,7 +126,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri": "[variables('templateUriRsVltRsrcs')]",
+                    "uri": "[variables('templateUriRsVlt')]",
                     "contentVersion": "1.0.0.0"
                 }
             }
@@ -153,7 +154,7 @@
                     }
                 },
                 "templateLink": {
-                    "uri": "[variables('templateUriRsVltRsrcs')]",
+                    "uri": "[variables('templateUriRsVltBackupPolicies')]",
                     "contentVersion": "1.0.0.0"
                 }
             }
