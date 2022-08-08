@@ -51,8 +51,7 @@
         "deployBuVltBackupPolicies": "deploy-bu-backup-policies",
         "deployLaw": "deploy-law",
         "deployRgs": "deploy-demo-rgs",
-        "deployRgPriWlRsrcs": "deploy-primary-workload-resources",
-        "deployRgSecWlRsrcs": "deploy-secondary-workload-resources",
+        "deployInfRes": "deploy-inf-res",
         "deployRsVlt": "deploy-rs-vault",
         "deployRsVltBackupPolicies": "deploy-rs-backup-policies",
         "rgNamePriVlt": "[concat('rgbckvltpri', parameters('uniqueData'))]",
@@ -189,7 +188,7 @@
             }
         },
         {
-            "name": "[variables('deployRsVltBackupPolicies')]",
+            "name": "[variables('deploy')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourcesApiVersion')]",
             "subscriptionId": "[subscription().subscriptionId]",
