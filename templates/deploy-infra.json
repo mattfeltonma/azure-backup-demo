@@ -482,25 +482,24 @@
             }
         },
         {
-            "name": "[concat(parameters('rsVaultName'),'/','Azure','/','IaasVMContainer;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmLinPriServer1Name'))]",
+            "name": "[concat(parameters('rsVaultName'),'/Azure/IaasVMContainer;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmLinPriServer1Name'),'/VM;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmLinPriServer1Name'))]",
             "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
             "apiVersion": "[variables('rcvSvcVltApiVersion')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/',variables('vmWinPriServer2Name'))]"  
+                "[concat('Microsoft.Resources/deployments/',variables('vmWinPriServer2Name'))]"
             ],
             "properties": {
                 "protectedItemType": "Microsoft.Compute/virtualMachines",
                 "policyId": "[parameters('rsVaultBscBuPolicyResId')]",
                 "sourceResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmLinPriServer1Name'))]"
             }
-
         },
         {
-            "name": "[concat(parameters('rsVaultName'),'/','Azure','/','IaasVMContainer;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmWinPriServer1Name'))]",
+            "name": "[concat(parameters('rsVaultName'),'/Azure/IaasVMContainer;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmWinPriServer1Name'),'/VM;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmWinPriServer1Name'))]",
             "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
             "apiVersion": "[variables('rcvSvcVltApiVersion')]",
             "dependsOn": [
-                "[resourceId('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', parameters('rsVaultName'), 'Azure', concat('IaasVMContainer;iaasvmcontainerv2;', resourceGroup().name, ';', variables('vmLinPriServer1Name')))]"
+                "[concat('Microsoft.RecoveryServices/vaults',parameters('rsVaultName'),'/backupFabrics/Azure/protectionContainers/IaasVMContainer;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmWinPriServer1Name'),'/protectedItems/','/VM;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmWinPriServer1Name'))]"
             ],
             "properties": {
                 "protectedItemType": "Microsoft.Compute/virtualMachines",
