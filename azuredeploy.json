@@ -201,7 +201,10 @@
                 "parameters": {
                     "lawResourceId": {
                         "value": "[reference(variables('deployLaw')).outputs.logAnalyticsResourceId.value]"
-                    },           
+                    },
+                    "secResourceGroupName": {
+                        "value": "[variables('rgNameSecWl')]"
+                    },            
                     "tags": {
                         "value": "[parameters('tags')]"
                     },
