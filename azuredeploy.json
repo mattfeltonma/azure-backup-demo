@@ -220,6 +220,15 @@
                     "lawResourceId": {
                         "value": "[reference(variables('deployLaw')).outputs.logAnalyticsResourceId.value]"
                     },
+                    "rsVaultAdvBuPolicyResId": {
+                        "value": "[reference(variables('deployRsVltBackupPolicies')).outputs.cstVmAdvPolResId.value]"
+                    },
+                    "rsVaultBscBuPolicyResId": {
+                        "value": "[reference(variables('deployRsVltBackupPolicies')).outputs.cstVmBscPolResId.value]"
+                    },
+                    "rsVaultName": {
+                        "value": "[reference(variables('deployRsVlt')).outputs.rsVaultName.value]"
+                    },
                     "secLocation": {
                         "value": "[parameters('secLocation')]"
                     },
