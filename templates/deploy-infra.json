@@ -102,7 +102,7 @@
                             "type": "Microsoft.Network/networkSecurityGroups",
                             "name": "[variables('wlSecNsgName')]",
                             "apiVersion": "[variables('networkApiVersion')]",
-                            "location": "[resourceGroup().location]",
+                            "location": "[parameters('secLocation')]",
                             "tags": "[parameters('tags')]",
                             "properties": {
                                 "securityRules": []
@@ -112,7 +112,7 @@
                             "type": "Microsoft.Network/virtualNetworks",
                             "name": "[variables('wlSecVnetName')]",
                             "apiVersion": "[variables('networkApiVersion')]",
-                            "location": "[resourceGroup().location]",
+                            "location": "[parameters('secLocation')]",
                             "tags": "[parameters('tags')]",
                             "dependsOn": [
                                 "[resourceId(parameters('secResourceGroupName'),'Microsoft.Network/networkSecurityGroups', variables('wlSecNsgName'))]"
@@ -164,9 +164,7 @@
                     {
                         "name": "[variables('bastionSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[variables('wlPriVnetBastionSubnetCidr')]",
-                            "networkSecurityGroup": {
-                            }
+                            "addressPrefix": "[variables('wlPriVnetBastionSubnetCidr')]"
                         }
                     },
                     {
