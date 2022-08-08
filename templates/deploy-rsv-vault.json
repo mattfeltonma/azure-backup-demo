@@ -96,7 +96,7 @@
             ],
             "properties": {
                 "name": "sendToWorkspace",
-                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('lawResourceId'))]",
+                "workspaceId": "[parameters('lawResourceId')]",
                 "logs": [
                     {
                         "category": "AzureBackupReport",
