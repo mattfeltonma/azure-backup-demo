@@ -47,7 +47,10 @@
     },
     "variables": {
         "resourcesApiVersion": "2020-06-01",
-        "deployRgRsVltRsrcs": "deploy-rs-vault",
+        "deployRsVlt": "deploy-rs-vault",
+        "deployRsVltBackupPolicies": "deploy-rs-backup-policies",
+        "deployBuVlt": "deploy-bu-vault",
+        "deployBuVltBackupPolicies": "deploy-bu-backup-policies",
         "deployRgPriWlRsrcs": "deploy-primary-workload-resources",
         "deployRgSecWlRsrcs": "deploy-secondary-workload-resources",
         "deployRgs": "deploy-demo-rgs",
@@ -103,7 +106,7 @@
             }
         },
         {
-            "name": "[variables('deployRgRsVltRsrcs')]",
+            "name": "[variables('deployRsVlt')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourcesApiVersion')]",
             "subscriptionId": "[subscription().subscriptionId]",
@@ -128,19 +131,19 @@
             }
         },
         {
-            "name": "[variables('deployRgRsVltRsrcs')]",
+            "name": "[variables('deployRsVltBackupPolicies')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourcesApiVersion')]",
             "subscriptionId": "[subscription().subscriptionId]",
             "resourceGroup": "[variables('rgNamePriVlt')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', variables('deployRgRsVltRsrcs'))]"
+                "[concat('Microsoft.Resources/deployments/', variables('deployRsVlt'))]"
             ],
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
                     "recSvcVaultName": {
-                        "value": "[reference(variables('deployRgRsVltRsrcs')).outputs.rsVaultName.value]"
+                        "value": "[reference(variables('deployRsVlt')).outputs.rsVaultName.value]"
                     },             
                     "tags": {
                         "value": "[parameters('tags')]"
