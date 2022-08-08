@@ -145,7 +145,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionPublicIpName'))]",
                 "[resourceId('Microsoft.Network/networkSecurityGroups', variables('wlPriNsgName'))]",
-                "[resourceId('Microsoft.Resources/deployments', variables('deploySecInfRes'))]"
+                "[concat('Microsoft.Resources/deployments/', variables('deploySecInfRes'))]"
             ],
             "properties": {
                 "addressSpace": {
@@ -238,7 +238,7 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionPublicIpName'))]",
                 "[resourceId('Microsoft.Network/virtualNetworks', variables('wlPriVnetName'))]",
-                "[resourceId('Microsoft.Resources/deployments',variables('deploySecVnetPeering'))]"
+                "[concat('Microsoft.Resources/deployments/',variables('deploySecVnetPeering'))]"
             ],
             "tags": "[parameters('tags')]",
             "properties": {
