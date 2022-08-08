@@ -1,0 +1,161 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "The location to deploy the resources. Modify template to allow additional regions"
+            },
+            "allowedValues": [
+                "centralus",
+                "eastus",
+                "eastus2",
+                "southcentralus",
+                "westus",
+                "westus2"
+            ]
+        },
+        "vmAdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Administrator name for VMs that are created"
+            }
+        },
+        "vmAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the VMs that are created"
+            }
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "The tags that wil be associated to the resources"
+            },
+            "defaultValue": {
+                "environment": "demo"
+            }
+        },
+        "uniqueData": {
+            "type": "string",
+            "metadata": {
+                "description": "Creates a new GUID to create uniqueness for resources"
+            },
+            "defaultValue": "[substring(newGuid(),0,8)]"
+        }
+    },
+    "variables": {
+        "resourcesApiVersion": "2020-06-01",
+        "deployRgRsVltRsrcs": "deploy-rs-vault",
+        "deployRgPriWlRsrcs": "deploy-primary-workload-resources",
+        "deployRgSecWlRsrcs": "deploy-secondary-workload-resources",
+        "deployRgs": "deploy-demo-rgs",
+        "rgNamePriVlt": "[concat('rgbckvltpri', parameters('uniqueData'))]",
+        "rgNamePriWl": "[concat('rgbckwlpri', parameters('uniqueData'))]",
+        "rgNameSecWl": "[concat('rgbckwlsec', parameters('uniqueData'))]",
+        "templateUriRsVltRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-vault.json'))]",
+        "templateUriPriWlRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-pri-wl.json'))]",
+        "templateUriSecWlRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-sec-wl.json'))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('deployRgs')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "location": "[parameters('location')]",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "name": "[variables('rgNamePriVlt')]",
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "[variables('resourcesApiVersion')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                            }
+                        },
+                        {
+                            "name": "[variables('rgNamePriWl')]",
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "[variables('resourcesApiVersion')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                            }
+                        },
+                        {
+                            "name": "[variables('rgNameSecWl')]",
+                            "type": "Microsoft.Resources/resourceGroups",
+                            "apiVersion": "[variables('resourcesApiVersion')]",
+                            "location": "[parameters('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[variables('deployRgRsVltRsrcs')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('rgNamePriVlt')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deployRgs'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriRsVltRsrcs')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('deployRgRsVltRsrcs')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('rgNamePriVlt')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deployRgRsVltRsrcs'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "recSvcVaultName": {
+                        "value": "[reference(variables('deployRgRsVltRsrcs')).outputs.rsVaultName.value]"
+                    },             
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriRsVltRsrcs')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        }
+    ],
+    "outputs": {
+    }
+}

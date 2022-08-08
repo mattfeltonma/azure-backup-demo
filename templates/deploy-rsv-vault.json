@@ -1,0 +1,92 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "The tags that will be associated to the resources"
+            },
+            "defaultValue": {
+                "environment": "lab"
+            }
+        },
+        "uniqueData": {
+            "type": "string",
+            "metadata": {
+                "description": "Data used to append to resources to ensure uniqueness"
+            },
+            "defaultValue": "[substring(newGuid(),0,8)]"
+        }
+    },
+    "variables": {
+        "rcvSvcVltApiVersion": "2022-04-01",
+        "location": "[resourceGroup().location]",
+        "vaultName": "[concat('vlt',parameters('uniqueData'))]"
+    },
+    "resources": [
+        {
+            "name": "[variables('vaultName')]",
+            "type": "Microsoft.RecoveryServices/vaults",
+            "apiVersion": "[variables('rcvSvcVltApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "sku": {
+                "name": "RS0",
+                "tier": "Standard"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "monitoringSettings": {
+                    "azureMonitorAlertSettings": {
+                        "alertsForAllJobFailures": "Enabled"
+                    },
+                    "classicAlertSettings": {
+                        "alertsForCriticalOperations": "Disabled"
+                    }
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('vaultName'),'/','vaultconfig')]",
+            "type": "Microsoft.RecoveryServices/vaults/backupconfig",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', variables('vaultName'))]"
+            ],
+            "apiVersion": "[variables('rcvSvcVltApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "enhancedSecurityState": "Disabled",
+                "isSoftDeleteFeatureStateEditable": true,
+                "softDeleteFeatureState": "Disabled"
+            }
+        },
+        {
+            "name": "[concat(variables('vaultName'),'/','vaultstorageconfig')]",
+            "type": "Microsoft.RecoveryServices/vaults/backupstorageconfig",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults', variables('vaultName'))]"
+            ],
+            "apiVersion": "[variables('rcvSvcVltApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "storageModelType": "GeoRedundant",
+                "crossRegionRestoreFlag": true
+            }
+        }
+    ],
+    "outputs": {
+        "rsVaultName": {
+            "type": "string",
+            "value": "[variables('vaultName')]"
+        },
+        "rsVaultResourceId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.RecoveryServices/vaults', variables('vaultName'))]"
+        }
+    }
+}
