@@ -109,7 +109,7 @@
                             "location": "[variables('location')]",
                             "tags": "[parameters('tags')]",
                             "dependsOn": [
-                                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('wlSecNsgName'))]"
+                                "[resourceId(parameters('secResourceGroupName'),'Microsoft.Network/networkSecurityGroups', variables('wlSecNsgName'))]"
                             ],
                             "properties": {
                                 "addressSpace": {
