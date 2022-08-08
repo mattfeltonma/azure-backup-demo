@@ -123,7 +123,7 @@
                                         "properties": {
                                             "addressPrefix": "[variables('wlSecVnetWlSubnetCidr')]",
                                             "networkSecurityGroup": {
-                                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('wlSecNsgName'))]"
+                                                "id": "[resourceId(parameters('secResourceGroupName'),'Microsoft.Network/networkSecurityGroups',variables('wlSecNsgName'))]"
                                             }
                                         }
                                     }
