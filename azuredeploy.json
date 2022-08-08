@@ -192,7 +192,7 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourcesApiVersion')]",
             "subscriptionId": "[subscription().subscriptionId]",
-            "resourceGroup": "[variables('rgNamePriVlt')]",
+            "resourceGroup": "[variables('rgNamePriWl')]",
             "dependsOn": [
                 "[concat('Microsoft.Resources/deployments/', variables('deployRsVlt'))]"
             ],
