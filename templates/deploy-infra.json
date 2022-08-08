@@ -1,0 +1,288 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "lawResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "The resource id of the Log Analytics Workspace"
+            }
+        },        
+        "secResourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the resource group in the secondary region"
+            }
+        },
+        "tags": {
+            "type": "object",
+            "metadata": {
+                "description": "The tags that will be associated to the resources"
+            },
+            "defaultValue": {
+                "environment": "lab"
+            }
+        },
+        "uniqueData": {
+            "type": "string",
+            "metadata": {
+                "description": "Data used to append to resources to ensure uniqueness"
+            },
+            "defaultValue": "[substring(newGuid(),0,8)]"
+        }
+    },
+    "variables": {
+        "diagnosticApiVersion": "2017-05-01-preview",
+        "networkApiVersion": "2020-07-01",
+        "resourcesApiVersion": "2020-06-01",
+        "location": "[resourceGroup().location]",
+        "bastionName": "[concat('bst', parameters('uniqueData'))]",
+        "bastionPublicIpName": "[concat('pip-bst', parameters('uniqueData'))]",
+        "bastionSubnetName": "AzureBastionSubnet",
+        "deploySecInfRes": "deploy-sec-reg-inf",
+        "deploySecVnetPeering": "deploy-sec-vnet-peering",
+        "workloadSubnetName": "snet-wl",
+        "wlPriNsgName": "nsg-wl-pri",
+        "wlPriPeerName": "peertosec",
+        "wlPriResourceGroupName": "[resourceGroup().name]",
+        "wlPriVnetBastionSubnetCidr": "10.0.1.0/24",
+        "wlPriVnetCidr": "10.0.0.0/16",
+        "wlPriVnetName": "[concat('vnet-wl-pri', parameters('uniqueData'))]",
+        "wlPriVnetWlSubnetCidr": "10.0.2.0/24",
+        "wlSecNsgName": "nsg-wl-sec",
+        "wlSecPeerName": "peertopri",
+        "wlSecVnetCidr": "10.1.0.0/16",
+        "wlSecVnetName": "[concat('vnet-wl-sec', parameters('uniqueData'))]",
+        "wlSecVnetWlSubnetCidr": "10.1.2.0/24"
+    },
+    "resources": [
+        {
+            "name": "[variables('bastionPublicIpName')]",
+            "type": "Microsoft.Network/publicIpAddresses",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "publicIpAllocationMethod": "Static"
+            },
+            "sku": {
+                "name": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('wlPriNsgName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "securityRules": []
+            }
+        },
+        {
+            "name": "[variables('deploySecInfRes')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "resourceGroup": "[parameters('secResourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "type": "Microsoft.Network/networkSecurityGroups",
+                            "name": "[variables('wlSecNsgName')]",
+                            "apiVersion": "[variables('networkApiVersion')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "properties": {
+                                "securityRules": []
+                            }
+                        },
+                        {
+                            "type": "Microsoft.Network/virtualNetworks",
+                            "name": "[variables('wlSecVnetName')]",
+                            "apiVersion": "[variables('networkApiVersion')]",
+                            "location": "[variables('location')]",
+                            "tags": "[parameters('tags')]",
+                            "dependsOn": [
+                                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('wlSecNsgName'))]"
+                            ],
+                            "properties": {
+                                "addressSpace": {
+                                    "addressPrefixes": [
+                                        "[variables('wlSecVnetCidr')]"
+                                    ]
+                                },
+                                "subnets": [
+                                    {
+                                        "name": "[variables('workloadSubnetName')]",
+                                        "properties": {
+                                            "addressPrefix": "[variables('wlSecVnetWlSubnetCidr')]",
+                                            "networkSecurityGroup": {
+                                            }
+                                        }
+                                    }
+                                ],
+                                "enableDdosProtection": false
+                            },
+                            "resources": [
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('wlPriVnetName')]",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionPublicIpName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('wlPriNsgName'))]",
+                "[resourceId('Microsoft.Resources/deployments', variables('deploySecInfRes'))]"
+            ],
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('wlPriVnetCidr')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('bastionSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('wlPriVnetBastionSubnetCidr')]",
+                            "networkSecurityGroup": {
+                            }
+                        }
+                    },
+                    {
+                        "name": "[variables('workloadSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('wlPriVnetWlSubnetCidr')]",
+                            "networkSecurityGroup": {
+                                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('wlPriNsgName'))]"
+                            }
+                        }
+                    }
+                ],
+                "enableDdosProtection": false
+            },
+            "resources": [
+                {
+                    "name": "[variables('wlPriPeerName')]",
+                    "type": "virtualNetworkPeerings",
+                    "apiVersion": "[variables('networkApiVersion')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[concat('Microsoft.Network/virtualNetworks/', variables('wlPriVnetName'))]"
+                    ],
+                    "properties": {
+                        "allowVirtualNetworkAccess": "true",
+                        "allowForwardedTraffic": "true",
+                        "allowGatewayTransit": "false",
+                        "useRemoteGateways": "false",
+                        "remoteVirtualNetwork": {
+                            "id": "[resourceId(parameters('secResourceGroupName'),'Microsoft.Network/virtualNetworks',variables('wlSecVnetName'))]"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "[variables('deploySecVnetPeering')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "resourceGroup": "[parameters('secResourceGroupName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/virtualNetworkPeerings', variables('wlPriVnetName'), variables('wlPriPeerName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "variables": {},
+                    "resources": [
+                        {
+                            "name": "[concat(variables('wlSecVnetName'),'/',variables('wlSecPeerName'))]",
+                            "type": "Microsoft.Network/virtualNetworks/virtualNetworkPeerings",
+                            "apiVersion": "[variables('networkApiVersion')]",
+                            "location": "[resourceGroup().location]",
+                            "properties": {
+                                "allowVirtualNetworkAccess": "true",
+                                "allowForwardedTraffic": "true",
+                                "allowGatewayTransit": "true",
+                                "useRemoteGateways": "false",
+                                "remoteVirtualNetwork": {
+                                    "id": "[resourceId(variables('wlPriResourceGroupName'), 'Microsoft.Network/virtualNetworks', variables('wlPriVnetName'))]"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "name": "[variables('bastionName')]",
+            "type": "Microsoft.Network/bastionHosts",
+            "apiVersion": "[variables('networkApiVersion')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionPublicIpName'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('wlPriVnetName'))]",
+                "[resourceId('Microsoft.Resources/deployments',variables('deploySecVnetPeering'))]"
+            ],
+            "tags": "[parameters('tags')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "bastionConfig",
+                        "properties": {
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('wlPriVnetName'), variables('bastionSubnetName'))]"
+                            },
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIpAddresses', variables('bastionPublicIpName'))]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[concat(variables('bastionName'),'/microsoft.insights/diag')]",
+            "type": "Microsoft.Network/bastionHosts/providers/diagnosticSettings",
+            "apiVersion": "[variables('diagnosticApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/bastionHosts',variables('bastionName'))]"
+            ],
+            "properties": {
+                "name": "SendToWorkspace",
+                "workspaceId": "[parameters('lawResourceId')]",
+                "logs": [
+                    {
+                        "category": "BastionAuditLogs",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                ]
+            },
+            "resources": [
+            ]
+        }
+    ],
+    "outputs": {
+    }
+}

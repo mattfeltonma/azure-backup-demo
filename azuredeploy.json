@@ -47,20 +47,21 @@
     },
     "variables": {
         "resourcesApiVersion": "2020-06-01",
-        "deployRsVlt": "deploy-rs-vault",
-        "deployRsVltBackupPolicies": "deploy-rs-backup-policies",
         "deployBuVlt": "deploy-bu-vault",
         "deployBuVltBackupPolicies": "deploy-bu-backup-policies",
+        "deployLaw": "deploy-law",
+        "deployRgs": "deploy-demo-rgs",
         "deployRgPriWlRsrcs": "deploy-primary-workload-resources",
         "deployRgSecWlRsrcs": "deploy-secondary-workload-resources",
-        "deployRgs": "deploy-demo-rgs",
+        "deployRsVlt": "deploy-rs-vault",
+        "deployRsVltBackupPolicies": "deploy-rs-backup-policies",
         "rgNamePriVlt": "[concat('rgbckvltpri', parameters('uniqueData'))]",
         "rgNamePriWl": "[concat('rgbckwlpri', parameters('uniqueData'))]",
         "rgNameSecWl": "[concat('rgbckwlsec', parameters('uniqueData'))]",
+        "templateUriLaw": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-law.json'))]",
         "templateUriRsVlt": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-vault.json'))]",
         "templateUriRsVltBackupPolicies": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-backup-policies.json'))]",
-        "templateUriPriWlRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-pri-wl.json'))]",
-        "templateUriSecWlRsrcs": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-sec-wl.json'))]"
+        "templateUriInfRes": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-infra.json'))]"
     },
     "resources": [
         {
@@ -107,7 +108,7 @@
             }
         },
         {
-            "name": "[variables('deployRsVlt')]",
+            "name": "[variables('deployLaw')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourcesApiVersion')]",
             "subscriptionId": "[subscription().subscriptionId]",
@@ -118,6 +119,34 @@
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriLaw')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('deployRsVlt')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('rgNamePriVlt')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deployLaw'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "lawResourceId": {
+                        "value": "[reference(variables('deployLaw')).outputs.logAnalyticsResourceId.value]"
+                    },
                     "tags": {
                         "value": "[parameters('tags')]"
                     },
@@ -155,6 +184,34 @@
                 },
                 "templateLink": {
                     "uri": "[variables('templateUriRsVltBackupPolicies')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('deployRsVltBackupPolicies')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('rgNamePriVlt')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deployRsVlt'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "lawResourceId": {
+                        "value": "[reference(variables('deployLaw')).outputs.logAnalyticsResourceId.value]"
+                    },           
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriInfRes')]",
                     "contentVersion": "1.0.0.0"
                 }
             }

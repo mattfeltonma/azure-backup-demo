@@ -2,6 +2,12 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "lawResourceId": {
+            "type": "string",
+            "metadata": {
+                "description": "The resource id of the Log Analytics Workspace"
+            }
+        },
         "tags": {
             "type": "object",
             "metadata": {
@@ -20,6 +26,7 @@
         }
     },
     "variables": {
+        "diagnosticApiVersion": "2017-05-01-preview",
         "rcvSvcVltApiVersion": "2022-04-01",
         "location": "[resourceGroup().location]",
         "vaultName": "[concat('vlt',parameters('uniqueData'))]"
@@ -77,6 +84,58 @@
                 "storageModelType": "GeoRedundant",
                 "crossRegionRestoreFlag": true
             }
+        },
+        {
+            "name": "[concat(variables('vaultName'),'/microsoft.insights/diag')]",
+            "type": "Microsoft.RecoveryServices/vaults/providers/diagnosticSettings",
+            "apiVersion": "[variables('diagnosticApiVersion')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults/backupstorageconfig', variables('vaultName'), 'vaultstorageconfig')]"
+            ],
+            "properties": {
+                "name": "sendToWorkspace",
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('lawResourceId'))]",
+                "logs": [
+                    {
+                        "category": "AzureBackupReport",
+                        "enabled": true
+                    },
+                    {
+                        "category": "CoreAzureBackup",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AddonAzureBackupJobs",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AddonAzureBackupAlerts",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AddonAzureBackupPolicy",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AddonAzureBackupStorage",
+                        "enabled": true
+                    },
+                    {
+                        "category": "AddonAzureBackupProtectedInstance",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "Health",
+                        "enabled": true
+                    }
+                ]
+            },
+            "resources": [
+            ]
         }
     ],
     "outputs": {
