@@ -188,7 +188,7 @@
             }
         },
         {
-            "name": "[variables('deploy')]",
+            "name": "[variables('deployInfRes')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "[variables('resourcesApiVersion')]",
             "subscriptionId": "[subscription().subscriptionId]",
