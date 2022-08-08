@@ -8,12 +8,30 @@
                 "description": "The resource id of the Log Analytics Workspace"
             }
         },
+        "rsVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the secondary region (must be the paired region)"
+            }
+        },
+        "rsVaultAdvBuPolicyResId": {
+            "type": "string",
+            "metadata": {
+                "description": "The resource id of the advanced backup policy"
+            }
+        },
+        "rsVaultBscBuPolicyResId": {
+            "type": "string",
+            "metadata": {
+                "description": "The resource id of the basic backup policy"
+            }
+        },
         "secLocation": {
             "type": "string",
             "metadata": {
                 "description": "The name of the secondary region (must be the paired region)"
             }
-        },        
+        },
         "secResourceGroupName": {
             "type": "string",
             "metadata": {
@@ -35,11 +53,25 @@
                 "description": "Data used to append to resources to ensure uniqueness"
             },
             "defaultValue": "[substring(newGuid(),0,8)]"
+        },
+        "vmAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the VMs that are created"
+            }
+        },
+        "vmAdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Administrator name for VMs that are created"
+            }
         }
     },
     "variables": {
+
         "diagnosticApiVersion": "2017-05-01-preview",
         "networkApiVersion": "2020-07-01",
+        "rcvSvcVltApiVersion": "2022-04-01",
         "resourcesApiVersion": "2020-06-01",
         "location": "[resourceGroup().location]",
         "bastionName": "[concat('bst', parameters('uniqueData'))]",
@@ -47,6 +79,18 @@
         "bastionSubnetName": "AzureBastionSubnet",
         "deploySecInfRes": "deploy-sec-reg-inf",
         "deploySecVnetPeering": "deploy-sec-vnet-peering",
+        "deployVmLinPriServer1": "deploy-vm-lin-pri-1-cf",
+        "deployVmWinPriServer1": "deploy-vm-win-pri-1-cf",
+        "deployVmWinPriServer2": "deploy-vm-win-pri-2-ncf",
+        "templateUriLin": "[concat(uri(deployment().properties.templateLink.uri,'deploy-linux-vm.json'))]",
+        "templateUriWin": "[concat(uri(deployment().properties.templateLink.uri,'deploy-windows-vm.json'))]",
+        "vmLinPriServer1Name": "vml-pri-1-cf",
+        "vmLinPriServer1Ip": "10.0.2.4",
+        "vmSku": "Standard_D4s_v5",
+        "vmWinPriServer1Name": "vmw-pri-1-cf",
+        "vmWinPriServer1Ip": "10.0.2.5",
+        "vmWinPriServer2Name": "vmw-pri-2-ncf",
+        "vmWinPriServer2Ip": "10.0.2.6",
         "workloadSubnetName": "snet-wl",
         "wlPriNsgName": "nsg-wl-pri",
         "wlPriPeerName": "peertosec",
@@ -286,6 +330,183 @@
             },
             "resources": [
             ]
+        },
+        {
+            "name": "[variables('deployVmLinPriServer1')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/bastionHosts',variables('bastionName'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "adminPassword": {
+                        "value": "[parameters('vmAdminPassword')]"
+                    },
+                    "adminUserName": {
+                        "value": "[parameters('vmAdminUsername')]"
+                    },
+                    "serverIpAddress": {
+                        "value": "[variables('vmLinPriServer1Ip')]"
+                    },
+                    "myWorkspaceId": {
+                        "value": "[reference(parameters('lawResourceId'), '2015-03-20').customerId]"
+                    },
+                    "myWorkspaceKey": {
+                        "value": "[listKeys(parameters('lawResourceId'), '2015-03-20').primarySharedKey]"
+                    },
+                    "subnetName": {
+                        "value": "[variables('wlPriVnetWlSubnetCidr')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    },
+                    "virtualMachineSize": {
+                        "value": "[variables('vmSku')]"
+                    },
+                    "vmName": {
+                        "value": "[variables('vmLinPriServer1Name')]"
+                    },
+                    "vnetName": {
+                        "value": "[variables('wlPriVnetName')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriLin')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('deployVmWinPriServer1')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/',variables('deployVmLinPriServer1'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "adminPassword": {
+                        "value": "[parameters('vmAdminPassword')]"
+                    },
+                    "adminUserName": {
+                        "value": "[parameters('vmAdminUsername')]"
+                    },
+                    "serverIpAddress": {
+                        "value": "[variables('vmWinPriServer1Ip')]"
+                    },
+                    "myWorkspaceId": {
+                        "value": "[reference(parameters('lawResourceId'), '2015-03-20').customerId]"
+                    },
+                    "myWorkspaceKey": {
+                        "value": "[listKeys(parameters('lawResourceId'), '2015-03-20').primarySharedKey]"
+                    },
+                    "subnetName": {
+                        "value": "[variables('wlPriVnetWlSubnetCidr')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    },
+                    "virtualMachineSize": {
+                        "value": "[variables('vmSku')]"
+                    },
+                    "vmName": {
+                        "value": "[variables('vmWinPriServer1Name')]"
+                    },
+                    "vnetName": {
+                        "value": "[variables('templateUriWin')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriWin')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('deployVmWinPriServer2')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/',variables('deployVmWinPriServer1'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "adminPassword": {
+                        "value": "[parameters('vmAdminPassword')]"
+                    },
+                    "adminUserName": {
+                        "value": "[parameters('vmAdminUsername')]"
+                    },
+                    "serverIpAddress": {
+                        "value": "[variables('vmWinPriServer2Ip')]"
+                    },
+                    "myWorkspaceId": {
+                        "value": "[reference(parameters('lawResourceId'), '2015-03-20').customerId]"
+                    },
+                    "myWorkspaceKey": {
+                        "value": "[listKeys(parameters('lawResourceId'), '2015-03-20').primarySharedKey]"
+                    },
+                    "subnetName": {
+                        "value": "[variables('wlPriVnetWlSubnetCidr')]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    },
+                    "virtualMachineSize": {
+                        "value": "[variables('vmSku')]"
+                    },
+                    "vmName": {
+                        "value": "[variables('vmWinPriServer2Name')]"
+                    },
+                    "vnetName": {
+                        "value": "[variables('wlPriVnetName')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriWin')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[concat(parameters('rsVaultName'),'/','Azure','/','IaasVMContainer;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmLinPriServer1Name'))]",
+            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+            "apiVersion": "[variables('rcvSvcVltApiVersion')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/',variables('vmWinPriServer2Name'))]"  
+            ],
+            "properties": {
+                "protectedItemType": "Microsoft.Compute/virtualMachines",
+                "policyId": "[parameters('rsVaultBscBuPolicyResId')]",
+                "sourceResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmLinPriServer1Name'))]"
+            }
+
+        },
+        {
+            "name": "[concat(parameters('rsVaultName'),'/','Azure','/','IaasVMContainer;iaasvmcontainerv2;',resourceGroup().name,';',variables('vmWinPriServer1Name'))]",
+            "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
+            "apiVersion": "[variables('rcvSvcVltApiVersion')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems', parameters('rsVaultName'), 'Azure', concat('IaasVMContainer;iaasvmcontainerv2;', resourceGroup().name, ';', variables('vmLinPriServer1Name')))]"
+            ],
+            "properties": {
+                "protectedItemType": "Microsoft.Compute/virtualMachines",
+                "policyId": "[parameters('rsVaultAdvBuPolicyResId')]",
+                "sourceResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmWinPriServer1Name'))]"
+            }
         }
     ],
     "outputs": {

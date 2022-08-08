@@ -21,8 +21,8 @@ try {
 
     # Install Azure CLI
     Write-Host "Downloading Azure CLI..."
-    $uri = "https://aka.ms/installazurecliwindows"
-    Invoke-WebRequest -Uri $uri -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+    $cliUri = "https://aka.ms/installazurecliwindows"
+    Invoke-WebRequest -Uri $cliUri -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
 
     # Install Azure PowerShell
     Write-Host "Installing Azure CLI..."
@@ -33,4 +33,31 @@ catch {
     Write-Host "Unable to install Azure CLI"
 }
 
+try {
+    # Create test files
+    Write-Host "Creating test files"
+
+    New-Item 'C:\sample-files' -ItemType directory
+    "This is sample file 1" | Out-File C:\sample-files\samplefile1.txt
+    "This is sample file 2" | Out-File C:\sample-files\samplefile2.txt
+    "This is sample file 3 and its original content" | Out-File C:\sample-file\samplefile3.txt
+}   
+catch {
+    Write-Host "Unable to create test files"
+}
+
+try {
+    # Download MARS agent
+    $marsUri = "https://aka.ms/azurebackup_agent"
+    $marsDest = "C:\MachinePrep\files\mars-agent.exe"
+    Invoke-WebRequest -Uri $marsUri -OutFile $marsDest
+
+    # Install MARS agent
+    Start-Process $marsDest -ArgumentList '/q'
+
+}
+
+catch {
+    Write-Host "Unable to install MARS agent"
+}
 Stop-Transcript 
