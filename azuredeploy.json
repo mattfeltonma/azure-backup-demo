@@ -267,7 +267,7 @@
             "subscriptionId": "[subscription().subscriptionId]",
             "resourceGroup": "[variables('rgNamePriWl')]",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', variables('deployRsVlt'))]"
+                "[concat('Microsoft.Resources/deployments/', variables('deployBuVltBackupPolicies'))]"
             ],
             "properties": {
                 "mode": "Incremental",
