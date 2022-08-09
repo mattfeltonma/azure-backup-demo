@@ -422,7 +422,7 @@
                         "value": "[variables('vmWinPriServer1Name')]"
                     },
                     "vnetName": {
-                        "value": "[variables('templateUriWin')]"
+                        "value": "[variables('wlPriVnetName')]"
                     }
                 },
                 "templateLink": {
