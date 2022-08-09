@@ -103,8 +103,8 @@
                         ]
                     },
                     {
-                        "name": "Daily",
-                        "isDefault": true,
+                        "name": "Weekly",
+                        "isDefault": false,
                         "objectType": "AzureRetentionRule",
                         "ruleType": "Retention",
                         "lifecycles": [
