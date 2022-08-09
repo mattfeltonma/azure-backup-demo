@@ -97,7 +97,7 @@
         "location": "[resourceGroup().location]",
         "nicName": "[concat(parameters('vmName'),parameters('uniqueData'))]",
         "osDiskType": "StandardSSD_LRS",
-        "scriptName": "prepare_ubuntu_dev_vm.sh",
+        "scriptName": "prepare_linux_vm.sh",
         "scriptUrl": "[uri(parameters('linkedTemplateLocation'), concat('../scripts/', variables('scriptName')))]",
         "subnetRef": "[resourceId(parameters('vnetSubscriptionId'),parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks/subnets',parameters('vnetName'),parameters('subnetName'))]"
     },
