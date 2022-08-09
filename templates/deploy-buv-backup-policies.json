@@ -1,0 +1,175 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "buVaultName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Backup Vault"
+            }
+        },
+        "uniqueData": {
+            "type": "string",
+            "metadata": {
+                "description": "Data used to append to resources to ensure uniqueness"
+            },
+            "defaultValue": "[substring(newGuid(),0,8)]"
+        }
+    },
+    "variables": {
+        "buVltApiVersion": "2022-05-01",
+        "backupDiskPolicyName": "[concat('cstDiskPolicy',parameters('uniqueData'))]",
+        "backupBlobPolicyName": "[concat('cstBlobPolicy',parameters('uniqueData'))]",
+        "backupRunTime": "R/2022-08-09T04:00:00+00:00/PT1H",
+        "retentionDailyDuration": "P7D",
+        "retentionWeeklyDuration": "P12W",
+        "retentionBlob": "P30D"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('buVaultName'), '/', variables('backupDiskPolicyName'))]",
+            "type": "Microsoft.DataProtection/backupVaults/backupPolicies",
+            "apiVersion": "[variables('buVltApiVersion')]",
+            "properties": {
+                "objectType": "BackupPolicy",
+                "datasourceTypes": [
+                    "Microsoft.Compute/disks"
+                ],
+                "policyRules": [
+                    {
+                        "backupParameters": {
+                            "backupType": "Incremental",
+                            "objectType": "AzureBackupParams"
+                        },
+                        "trigger": {
+                            "schedule": {
+                                "repeatingTimeIntervals": [
+                                    "[variables('backupRunTime')]"
+                                ],
+                                "timeZone": "UTC"
+                            },
+                            "taggingCriteria": [
+                                {
+                                    "criteria": [
+                                        {
+                                            "absoluteCriteria": [
+                                                "FirstOfWeek"
+                                            ],
+                                            "objectType": "ScheduleBasedBackupCriteria"
+                                        }
+                                    ],
+                                    "tagInfo": {
+                                        "tagName": "Weekly",
+                                        "id": "Weekly_"
+                                    },
+                                    "taggingPriority": 20,
+                                    "isDefault": false
+                                },
+                                {
+
+                                    "tagInfo": {
+                                        "tagName": "Hourly",
+                                        "id": "Hourly_"
+                                    },
+                                    "taggingPriority": 99,
+                                    "isDefault": true
+                                }
+                            ],
+                            "objectType": "ScheduleBasedTriggerContext"
+                        },
+                        "dataStore": {
+                            "dataStoreType": "OperationalStore",
+                            "objectType": "DataStoreInfoBase"
+                        },
+                        "name": "BackupHourly",
+                        "objectType": "AzureBackupRule"
+                    },
+                    {
+                        "name": "Daily",
+                        "isDefault": true,
+                        "objectType": "AzureRetentionRule",
+                        "ruleType": "Retention",
+                        "lifecycles": [
+                            {
+                                "sourceDataStore": {
+                                    "dataStoreType": "OperationalStore",
+                                    "objectType": "DataStoreInfoBase"
+                                },
+                                "deleteAfter": {
+                                    "objectType": "AbsoluteDeleteOption",
+                                    "duration": "[variables('retentionDailyDuration')]"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Daily",
+                        "isDefault": true,
+                        "objectType": "AzureRetentionRule",
+                        "ruleType": "Retention",
+                        "lifecycles": [
+                            {
+                                "sourceDataStore": {
+                                    "dataStoreType": "OperationalStore",
+                                    "objectType": "DataStoreInfoBase"
+                                },
+                                "deleteAfter": {
+                                    "objectType": "AbsoluteDeleteOption",
+                                    "duration": "[variables('retentionWeeklyDuration')]"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "[concat(parameters('buVaultName'), '/', variables('backupBlobPolicyName'))]",
+            "type": "Microsoft.DataProtection/backupVaults/backupPolicies",
+            "apiVersion": "[variables('buVltApiVersion')]",
+            "properties": {
+                "objectType": "BackupPolicy",
+                "datasourceTypes": [
+                    "Microsoft.Storage/storageAccounts/blobServices"
+                ],
+                "policyRules": [
+                    {
+                        "isDefault": true,
+                        "name": "Default",
+                        "objectType": "AzureRetentionRule",
+                        "lifecycles": [
+                            {
+                                "sourceDataStore": {
+                                    "dataStoreType": "OperationalStore",
+                                    "objectType": "DataStoreInfoBase"
+                                },
+                                "deleteAfter": {
+                                    "objectType": "AbsoluteDeleteOption",
+                                    "duration": "[variables('retentionBlob')]"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "cstDiskPolicyName": {
+            "type": "string",
+            "value": "[variables('backupDiskPolicyName')]"
+        },
+        "cstDiskPolResId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.DataProtection/backupVaults/backupPolicies', parameters('buVaultName'), variables('backupDiskPolicyName'))]"
+        },
+        "cstBlobPolicyName": {
+            "type": "string",
+            "value": "[variables('backupBlobPolicyName')]"
+        },
+        "cstBlobPolResId": {
+            "type": "string",
+            "value": "[resourceId('Microsoft.DataProtection/backupVaults/backupPolicies', parameters('buVaultName'), variables('backupBlobPolicyName'))]"
+        }
+    }
+}

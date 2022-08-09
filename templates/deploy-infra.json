@@ -79,6 +79,7 @@
         "networkApiVersion": "2020-07-01",
         "rcvSvcVltApiVersion": "2022-04-01",
         "resourcesApiVersion": "2020-06-01",
+        "storageApiVersion": "2021-09-01",
         "location": "[resourceGroup().location]",
         "bastionName": "[concat('bst', parameters('uniqueData'))]",
         "bastionPublicIpName": "[concat('pip-bst', parameters('uniqueData'))]",
@@ -89,6 +90,8 @@
         "deployVmLinPriServer1": "deploy-vm-lin-pri-1-cf",
         "deployVmWinPriServer1": "deploy-vm-win-pri-1-cf",
         "deployVmWinPriServer2": "deploy-vm-win-pri-2-ncf",
+        "storageBlobAccountName": "[concat('stblob', parameters('uniqueData'))]",
+        "storageFileAccountName": "[concat('stfile', parameters('uniqueData'))]",
         "templateUriLin": "[concat(uri(deployment().properties.templateLink.uri,'deploy-linux-vm.json'))]",
         "templateUriWin": "[concat(uri(deployment().properties.templateLink.uri,'deploy-windows-vm.json'))]",
         "vmLinPriServer1Name": "vml-pri-1-cf",
@@ -113,6 +116,52 @@
         "wlSecVnetWlSubnetCidr": "10.1.2.0/24"
     },
     "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[variables('storageApiVersion')]",
+            "name": "[variables('storageFileAccountName')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_GRS"
+            },
+            "properties": {
+            },
+            "resources": [
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "[variables('storageApiVersion')]",
+            "name": "[concat(variables('storageFileAccountName'), '/default/', 'sampleshare')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageFileAccountName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "[variables('storageApiVersion')]",
+            "name": "[variables('storageBlobAccountName')]",
+            "location": "[variables('location')]",
+            "tags": "[parameters('tags')]",
+            "kind": "StorageV2",
+            "sku": {
+                "name": "Standard_GRS"
+            },
+            "properties": {
+            },
+            "resources": [
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "[variables('storageApiVersion')]",
+            "name": "[concat(variables('storageBlobAccountName'),'/','sampleblobs')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageBlobAccountName'))]"
+            ]
+        },
         {
             "name": "[variables('bastionPublicIpName')]",
             "type": "Microsoft.Network/publicIpAddresses",

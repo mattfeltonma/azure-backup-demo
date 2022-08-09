@@ -78,6 +78,8 @@
         "templateUriLaw": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-law.json'))]",
         "templateUriRsVlt": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-vault.json'))]",
         "templateUriRsVltBackupPolicies": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-rsv-backup-policies.json'))]",
+        "templateUriBuVlt": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-buv-vault.json'))]",
+        "templateUriBuVltBackupPolicies": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-buv-backup-policies.json'))]",
         "templateUriInfRes": "[concat(uri(deployment().properties.templateLink.uri,'templates/deploy-infra.json'))]"
     },
     "resources": [
@@ -201,6 +203,59 @@
                 },
                 "templateLink": {
                     "uri": "[variables('templateUriRsVltBackupPolicies')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('deployBuVlt')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('rgNamePriVlt')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deployRsVltBackupPolicies'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "lawResourceId": {
+                        "value": "[reference(variables('deployLaw')).outputs.logAnalyticsResourceId.value]"
+                    },
+                    "tags": {
+                        "value": "[parameters('tags')]"
+                    },
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriBuVlt')]",
+                    "contentVersion": "1.0.0.0"
+                }
+            }
+        },
+        {
+            "name": "[variables('deployBuVltBackupPolicies')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "[variables('resourcesApiVersion')]",
+            "subscriptionId": "[subscription().subscriptionId]",
+            "resourceGroup": "[variables('rgNamePriVlt')]",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', variables('deployBuVlt'))]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "parameters": {
+                    "buVaultName": {
+                        "value": "[reference(variables('deployBuVlt')).outputs.buVaultName.value]"
+                    },             
+                    "uniqueData": {
+                        "value": "[parameters('uniqueData')]"
+                    }
+                },
+                "templateLink": {
+                    "uri": "[variables('templateUriBuVltBackupPolicies')]",
                     "contentVersion": "1.0.0.0"
                 }
             }
