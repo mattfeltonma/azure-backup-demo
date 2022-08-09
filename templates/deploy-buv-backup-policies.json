@@ -68,8 +68,8 @@
                                 {
 
                                     "tagInfo": {
-                                        "tagName": "Hourly",
-                                        "id": "Hourly_"
+                                        "tagName": "Default",
+                                        "id": "Default_"
                                     },
                                     "taggingPriority": 99,
                                     "isDefault": true
@@ -85,7 +85,7 @@
                         "objectType": "AzureBackupRule"
                     },
                     {
-                        "name": "Daily",
+                        "name": "Default",
                         "isDefault": true,
                         "objectType": "AzureRetentionRule",
                         "ruleType": "Retention",
