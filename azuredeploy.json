@@ -229,6 +229,9 @@
                     "rsVaultName": {
                         "value": "[reference(variables('deployRsVlt')).outputs.rsVaultName.value]"
                     },
+                    "rsVaultRg": {
+                        "value": "[variables('rgNamePriVlt')]"
+                    },
                     "secLocation": {
                         "value": "[parameters('secLocation')]"
                     },
