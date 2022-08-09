@@ -509,6 +509,7 @@
 
                             "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
                             "apiVersion": "[variables('rcvSvcVltApiVersion')]",
+                            "location": "[variables('location')]",
                             "properties": {
                                 "protectedItemType": "Microsoft.Compute/virtualMachines",
                                 "policyId": "[parameters('rsVaultBscBuPolicyResId')]",
@@ -519,6 +520,7 @@
                             "name": "[concat(parameters('rsVaultName'),'/Azure/IaasVMContainer;iaasvmcontainerv2;',parameters('rsVaultRg'),';',variables('vmWinPriServer1Name'),'/VM;iaasvmcontainerv2;',parameters('rsVaultRg'),';',variables('vmWinPriServer1Name'))]",
                             "type": "Microsoft.RecoveryServices/vaults/backupFabrics/protectionContainers/protectedItems",
                             "apiVersion": "[variables('rcvSvcVltApiVersion')]",
+                            "location": "[variables('location')]",
                             "dependsOn": [
                                 "[concat('Microsoft.RecoveryServices/vaults/',parameters('rsVaultName'),'/backupFabrics/Azure/protectionContainers/IaasVMContainer;iaasvmcontainerv2;',parameters('rsVaultRg'),';',variables('vmLinPriServer1Name'),'/protectedItems/','VM;iaasvmcontainerv2;',parameters('rsVaultRg'),';',variables('vmLinPriServer1Name'))]"
                             ],
