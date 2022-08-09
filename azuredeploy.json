@@ -219,9 +219,6 @@
             "properties": {
                 "mode": "Incremental",
                 "parameters": {
-                    "lawResourceId": {
-                        "value": "[reference(variables('deployLaw')).outputs.logAnalyticsResourceId.value]"
-                    },
                     "tags": {
                         "value": "[parameters('tags')]"
                     },

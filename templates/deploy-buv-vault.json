@@ -2,12 +2,6 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "lawResourceId": {
-            "type": "string",
-            "metadata": {
-                "description": "The resource id of the Log Analytics Workspace"
-            }
-        },
         "tags": {
             "type": "object",
             "metadata": {
