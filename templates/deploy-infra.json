@@ -357,7 +357,7 @@
                         "value": "[listKeys(parameters('lawResourceId'), '2015-03-20').primarySharedKey]"
                     },
                     "subnetName": {
-                        "value": "[variables('wlPriVnetWlSubnetCidr')]"
+                        "value": "[variables('workloadSubnetName')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
@@ -407,7 +407,7 @@
                         "value": "[listKeys(parameters('lawResourceId'), '2015-03-20').primarySharedKey]"
                     },
                     "subnetName": {
-                        "value": "[variables('wlPriVnetWlSubnetCidr')]"
+                        "value": "[variables('workloadSubnetName')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
@@ -457,7 +457,7 @@
                         "value": "[listKeys(parameters('lawResourceId'), '2015-03-20').primarySharedKey]"
                     },
                     "subnetName": {
-                        "value": "[variables('wlPriVnetWlSubnetCidr')]"
+                        "value": "[variables('workloadSubnetName')]"
                     },
                     "tags": {
                         "value": "[parameters('tags')]"
