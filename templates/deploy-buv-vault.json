@@ -26,7 +26,6 @@
         }
     },
     "variables": {
-        "diagnosticApiVersion": "2017-05-01-preview",
         "buVltApiVersion": "2022-05-01",
         "location": "[resourceGroup().location]",
         "storageType": "GeoRedundant", 
@@ -59,30 +58,6 @@
                     }
                 ]
             }
-        },
-        {
-            "name": "[concat(variables('vaultName'),'/microsoft.insights/diag')]",
-            "type": "Microsoft.DataProtection/BackupVaults/providers/diagnosticSettings",
-            "apiVersion": "[variables('diagnosticApiVersion')]",
-            "location": "[variables('location')]",
-            "tags": "[parameters('tags')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.DataProtection/BackupVaults', variables('vaultName'))]"
-            ],
-            "properties": {
-                "name": "sendToWorkspace",
-                "workspaceId": "[parameters('lawResourceId')]",
-                "logs": [
-                    {
-                        "category": "AzureBackupReport",
-                        "enabled": true
-                    }
-                ],
-                "metrics": [
-                ]
-            },
-            "resources": [
-            ]
         }
     ],
     "outputs": {
