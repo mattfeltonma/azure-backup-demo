@@ -43,9 +43,9 @@ configuration WindowsDevVM {
             Enabled = $false
         }
 
-        xWaitforDisk Disk2 
+        xWaitforDisk Disk1 
         {
-            DiskId = 2
+            DiskId = 1
             DiskIdType = "Number"
             RetryIntervalSec = $RetryIntervalSec
             RetryCount = $RetryCount
@@ -53,7 +53,7 @@ configuration WindowsDevVM {
 
         xDisk DataDisk 
         {
-            DiskId = 2
+            DiskId = 1
             DiskIdType = "Number"
             DriveLetter= "F"
             DependsOn = "[xWaitForDisk]Disk2"
