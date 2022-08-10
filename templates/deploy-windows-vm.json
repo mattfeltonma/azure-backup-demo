@@ -260,7 +260,7 @@
                 },
                 {
                     "type": "extensions",
-                    "name": "CreateDevServer",
+                    "name": "WindowsDevVM",
                     "apiVersion": "[variables('vmApiVersion')]",
                     "location": "[variables('location')]",
                     "dependsOn": [
