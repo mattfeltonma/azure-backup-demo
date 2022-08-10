@@ -56,7 +56,7 @@ configuration WindowsDevVM {
             DiskId = 1
             DiskIdType = "Number"
             DriveLetter= "F"
-            DependsOn = "[xWaitForDisk]Disk2"
+            DependsOn = "[xWaitForDisk]Disk1"
         }
     }
 }
