@@ -43,5 +43,21 @@ configuration WindowsDevVM {
             Role    = 'Users'
             Enabled = $false
         }
+
+        xWaitforDisk Disk2 
+        {
+            DiskId = 2
+            DiskIdType = "Number"
+            RetryIntervalSec = $RetryIntervalSec
+            RetryCount = $RetryCount
+        }
+
+        xDisk DataDisk 
+        {
+            DiskId = 2
+            DiskIdType = "Number"
+            DriveLetter= "F"
+            DependsOn = "[xWaitForDisk]Disk2"
+        }
     }
 }

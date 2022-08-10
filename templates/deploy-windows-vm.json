@@ -160,6 +160,18 @@
                     }
                 },
                 "storageProfile": {
+                    "dataDisks": [
+                        {
+                            "name": "[concat(parameters('vmName'),'_data-disk1')]",
+                            "caching": "None",
+                            "diskSizeGB": "1",
+                            "lun": 0,
+                            "createOption": "Empty",
+                            "managedDisk": {
+                                "storageAccountType": "StandardSSD_LRS"
+                            }
+                        }
+                    ],
                     "osDisk": {
                         "createOption": "fromImage",
                         "managedDisk": {

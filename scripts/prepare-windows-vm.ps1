@@ -37,10 +37,10 @@ try {
     # Create test files
     Write-Host "Creating test files"
 
-    New-Item 'C:\sample-files' -ItemType directory
-    "This is sample file 1" | Out-File C:\sample-files\samplefile1.txt
-    "This is sample file 2" | Out-File C:\sample-files\samplefile2.txt
-    "This is sample file 3 and its original content" | Out-File C:\sample-file\samplefile3.txt
+    New-Item 'F:\sample-files' -ItemType directory
+    "This is sample file 1" | Out-File F:\sample-files\samplefile1.txt
+    "This is sample file 2" | Out-File F:\sample-files\samplefile2.txt
+    "This is sample file 3 and its original content" | Out-File F:\sample-files\samplefile3.txt
 }   
 catch {
     Write-Host "Unable to create test files"
