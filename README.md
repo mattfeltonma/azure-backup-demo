@@ -1,7 +1,7 @@
 # Azure Backup Demonstration
 
 ## Overview
-This repository includes a variety of artifacts that can be used to learn and demonstrate a subset of capabilities for [Azure Backup](https://docs.microsoft.com/en-us/azure/backup/backup-overview). Azure Backup is the native backup solution in the Microsoft Azure cloud. It provides backup functionality for workloads running in Azure or on-premises. A detailed listing of which workloads are supported are documented in the [public documentation](https://docs.microsoft.com/en-us/azure/backup/backup-support-matrix). This artifacts in this repository cover **only** the following use cases:
+This repository includes a variety of artifacts that can be used to learn and demonstrate a subset of capabilities for [Azure Backup](https://docs.microsoft.com/en-us/azure/backup/backup-overview). Azure Backup is the native backup solution in the Microsoft Azure cloud. It provides backup functionality for workloads running in Azure or on-premises. A detailed listing of which workloads are supported are documented in the [public documentation](https://docs.microsoft.com/en-us/azure/backup/backup-support-matrix). The artifacts in this repository cover **only** the following use cases:
 
 * Azure Virtual Machines
 * Azure Managed Disks
