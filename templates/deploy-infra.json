@@ -80,6 +80,7 @@
         "rcvSvcVltApiVersion": "2022-04-01",
         "resourcesApiVersion": "2020-06-01",
         "storageApiVersion": "2021-09-01",
+        "availabilityZone": "1",
         "location": "[resourceGroup().location]",
         "bastionName": "[concat('bst', parameters('uniqueData'))]",
         "bastionPublicIpName": "[concat('pip-bst', parameters('uniqueData'))]",
@@ -403,6 +404,9 @@
                     "adminUserName": {
                         "value": "[parameters('vmAdminUsername')]"
                     },
+                    "availabilityZone": {
+                        "value": "[variables('availabilityZone')]"
+                    },
                     "serverIpAddress": {
                         "value": "[variables('vmLinPriServer1Ip')]"
                     },
@@ -453,6 +457,9 @@
                     "adminUserName": {
                         "value": "[parameters('vmAdminUsername')]"
                     },
+                    "availabilityZone": {
+                        "value": "[variables('availabilityZone')]"
+                    },
                     "serverIpAddress": {
                         "value": "[variables('vmWinPriServer1Ip')]"
                     },
@@ -502,6 +509,9 @@
                     },
                     "adminUserName": {
                         "value": "[parameters('vmAdminUsername')]"
+                    },
+                    "availabilityZone": {
+                        "value": "[variables('availabilityZone')]"
                     },
                     "serverIpAddress": {
                         "value": "[variables('vmWinPriServer2Ip')]"
