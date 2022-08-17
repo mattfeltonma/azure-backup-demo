@@ -30,6 +30,8 @@ The MARS agent on the Windows VM (vmw-pri-1-cf) can be setup and integrated with
 
 2. You must be capable of deploying resources to a set of paired regions. The templates are configured to allow deployment to regions within the US geopolitical region and that have regional pairs. If you wish to deploy to another geopolitical region, you will need to modify the azuredeploy.json template.
 
+3. The virtual machines created in this deployment are deployed into availability zones. The region(s) you deploy the resources to [must support availability zones](https://docs.microsoft.com/en-us/azure/availability-zones/az-region).
+
 ### Installation with Azure Portal
 
 Click the Deploy To Azure button below.

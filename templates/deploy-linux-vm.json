@@ -18,8 +18,7 @@
             "type": "string",
             "metadata": {
                 "description": "The number of the availability zone to deploy to"
-            },
-            "defaultValue": ""
+            }
         },
         "linkedTemplateLocation": {
             "type": "string",

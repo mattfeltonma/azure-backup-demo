@@ -510,6 +510,9 @@
                     "adminUserName": {
                         "value": "[parameters('vmAdminUsername')]"
                     },
+                    "availabilityZone": {
+                        "value": "[variables('availabilityZone')]"
+                    },
                     "serverIpAddress": {
                         "value": "[variables('vmWinPriServer2Ip')]"
                     },
