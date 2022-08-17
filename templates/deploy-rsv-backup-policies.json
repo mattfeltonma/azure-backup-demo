@@ -43,7 +43,8 @@
             "properties": {
                 "backupManagementType": "AzureIaasVM",
                 "instantRPDetails": {
-                    "azureBackupRGNamePrefix": "rgbckirpri"
+                    "azureBackupRGNamePrefix": "rgbckirpri",
+                    "azureBackupRGNameSuffix": "[parameters('uniqueData')]"
                 },
                 "instantRpRetentionRangeInDays": 5,
                 "policyType": "V1",
