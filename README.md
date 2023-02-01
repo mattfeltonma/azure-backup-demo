@@ -58,7 +58,7 @@ Click the Deploy To Azure button below.
 4.  You will be prompted to provide a password for the local administrator of the virtual machine.
 
 ### Post Installation
-Once the lab is deployed, you can RDP or SSH into the virtual machines using Azure Bastion.
+Once the lab is deployed, you should wait at least 24 hours for restore points to be generated for the virtual machines. You can remotely access the virtual machines using the deployed Azure Bastion instance.
 
 ### Removal of Resources
 It is very important you follow the instructions below when you are done with the lab. If you do not follow these instructions, it could result in shadow resources which will require you to work with support to remove.
