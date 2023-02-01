@@ -10,7 +10,7 @@ This repository includes a variety of artifacts that can be used to learn and de
 
 
 ## Artifacts
-The artifacts include a PowerPoint overview deck, deployable lab to learn and demonstrate features and capabilities, and a step-by-step guide on how to demonstrate specific features (COMING SOON).
+The artifacts include a PowerPoint overview deck, deployable lab to learn and demonstrate features and capabilities, and a series of exercises to demonstrate and experiment with key features.
 
 ## Lab Deployment
 The deployable lab included in this repository is coded using [ARM resource templates](https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/syntax) and uses a combination of PowerShell and Bash scripts and DSC to pre-configure resources deployed.
