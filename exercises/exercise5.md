@@ -1,4 +1,4 @@
-## Exercise 5 - Backup Virtual Machine with Azure Backup Center
+## Exercise 5 - Backup a Virtual Machine with Azure Backup Center
 
 In this exercise you will configure a virtual machine for backup using Azure Backup Center.
 

@@ -1,4 +1,4 @@
-## Exercise 7 - Backup Azure Blobs with Azure Backup
+## Exercise 7 - Backup and Restore Azure Blobs
 
 In this exercise you will backup an Azure Blob container for backup.
 

@@ -1,4 +1,4 @@
-## Exercise 6 - Backup Azure File Share with Azure Backup
+## Exercise 6 - Backup and Restore Azure File Shares
 
 In this exercise you will an Azure File share.
 
