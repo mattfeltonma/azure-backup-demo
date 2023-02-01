@@ -60,6 +60,9 @@ Click the Deploy To Azure button below.
 ### Post Installation
 Once the lab is deployed, you should wait at least 24 hours for restore points to be generated for the virtual machines. You can remotely access the virtual machines using the deployed Azure Bastion instance.
 
+### Exercises
+This repository contains a collection of exercises you can perform with the lab to learn or demonstrate the core features of Azure Backup. You can find [the exercises here](/exercises/README.md).
+
 ### Removal of Resources
 It is very important you follow the instructions below when you are done with the lab. If you do not follow these instructions, it could result in shadow resources which will require you to work with support to remove.
 
