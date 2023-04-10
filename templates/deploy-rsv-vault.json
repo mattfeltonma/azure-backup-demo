@@ -98,11 +98,8 @@
             "properties": {
                 "name": "sendToWorkspace",
                 "workspaceId": "[parameters('lawResourceId')]",
+                "logAnalyticsDestinationType": "Dedicated",
                 "logs": [
-                    {
-                        "category": "AzureBackupReport",
-                        "enabled": true
-                    },
                     {
                         "category": "CoreAzureBackup",
                         "enabled": true
